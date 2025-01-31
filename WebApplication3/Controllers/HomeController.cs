@@ -12,7 +12,7 @@ namespace WebApplication3.Controllers
         {
             _logger = logger;
         }
-
+        // tamam sayfa geliyor
         public IActionResult Index()
         {
             return View();
