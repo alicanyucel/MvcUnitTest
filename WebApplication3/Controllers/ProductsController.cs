@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApplication3.Context;
 using WebApplication3.Models;
+using WebApplication3.Repositories;
 
 namespace WebApplication3.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Product> _repository;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(IRepository<Product> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: Products
@@ -28,8 +29,7 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _repository.GetAllAsync()..FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -39,8 +39,9 @@ namespace WebApplication3.Controllers
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public async IActionResult Create()
         {
+            await _repository.CreateAsync();
             return View();
         }
 
