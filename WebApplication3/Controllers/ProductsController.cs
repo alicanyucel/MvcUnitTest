@@ -18,7 +18,7 @@ namespace WebApplication3.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            return View(await _repository.GetAllAsync());
         }
 
         // GET: Products/Details/5
@@ -29,7 +29,7 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            var product = await _repository.GetAllAsync()..FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _repository.GetByIdAsync((int) id);
             if (product == null)
             {
                 return NotFound();
@@ -37,25 +37,14 @@ namespace WebApplication3.Controllers
 
             return View(product);
         }
-
-        // GET: Products/Create
-        public async IActionResult Create()
-        {
-            await _repository.CreateAsync();
-            return View();
-        }
-
-        // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Price,Color")] Product product)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
+                await _repository.Create(product);
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -68,51 +57,30 @@ namespace WebApplication3.Controllers
             {
                 return NotFound();
             }
-
-            var product = await _context.Products.FindAsync(id);
+            var product = await _repository.GetByIdAsync((int)id);
             if (product == null)
             {
                 return NotFound();
             }
             return View(product);
         }
-
-        // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,Color")] Product product)
+        public async Task<IActionResult> Edit(int id,[Bind ("Id,Name,Price,Color")]Product product)
         {
-            if (id != product.Id)
+            if (id != Prod)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var product = await _repository.GetByIdAsync((int) id);
+            if (product == null) 
             {
-                try
-                {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
             return View(product);
         }
 
-        // GET: Products/Delete/5
+      
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
