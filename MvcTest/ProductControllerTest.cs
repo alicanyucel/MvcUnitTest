@@ -60,4 +60,16 @@ public class ProductControllerTest
         Assert.Equal<int>(404, redirect.StatusCode);
 
     }
+    [Theory]
+    [InlineData(1)]
+    public async void Details_ValidId_ReturnProduct(int productId)
+    {
+        Product product=_products.First(x=>x.Id==productId);
+        _mockrepository.Setup(repo=>repo.GetByIdAsync(productId)).ReturnsAsync(product);
+        var result=await _controller.Details(productId);
+        var viewResult=Assert.IsType<ViewResult>(result);
+        var resultProduct=Assert.IsAssignableFrom<Product>(viewResult.Model);
+        Assert.Equal(product.Id, resultProduct.Id);
+        Assert.Equal(product.Name, resultProduct.Name);
+    }
 }
