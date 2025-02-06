@@ -129,5 +129,17 @@ public class ProductControllerTest
         Assert.Equal(404,redirect.StatusCode);
 
     }
+    [Theory]
+    [InlineData(2)]
+    public async void Edit_ActionExecute_ReturnProduct(int productId)
+    {
+        var product=_products.First(x=>x.Id==productId);
+        _mockrepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(product);
+        var result=await _controller.Edit(productId);
+        var viewResult=Assert.IsType<ViewResult>(result);
+        var resultProduct=Assert.IsAssignableFrom<Product>(viewResult.Model);
+        Assert.Equal(product.Id,resultProduct.Id);
+        Assert.Equal(product.Name,resultProduct.Name);
+    }
    
 }
