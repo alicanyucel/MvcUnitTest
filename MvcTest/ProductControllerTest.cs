@@ -39,7 +39,6 @@ public class ProductControllerTest
         var viewResult = Assert.IsType<ViewResult>(result);
         var productList = Assert.IsAssignableFrom<IEnumerable<Product>>(viewResult.Model);
         Assert.Equal<int>(2, productList.Count());
-
     }
     [Fact]
     public async void Details_IdIsNull_ReturnRedirectToIndexAction()
@@ -47,7 +46,6 @@ public class ProductControllerTest
         var result = await _controller.Details(null);
         var redirect = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirect.ActionName);
-
     }
     [Fact]
     public async void Details_IdInValid_ReturnNotFound()
@@ -57,7 +55,6 @@ public class ProductControllerTest
         var result = await _controller.Details(0);
         var redirect = Assert.IsType<NotFoundResult>(result);
         Assert.Equal<int>(404, redirect.StatusCode);
-
     }
     [Theory]
     [InlineData(1)]
@@ -91,7 +88,6 @@ public class ProductControllerTest
         var result = await _controller.Create(_products.First());
         var rediret = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", rediret.ActionName);
-
     }
     [Fact]
     public async void CreatePost_ValidModelState_CreateMethodExecute()
@@ -126,7 +122,6 @@ public class ProductControllerTest
         var result= await _controller.Edit(productId);
         var redirect=Assert.IsType<NotFoundResult>(result);
         Assert.Equal(404,redirect.StatusCode);
-
     }
     [Theory]
     [InlineData(2)]
@@ -155,7 +150,6 @@ public class ProductControllerTest
         var result=_controller.Edit(productId,_products.First(x=>x.Id==productId));
         var viewResult=Assert.IsType<ViewResult>(result);
         Assert.IsType<Product>(viewResult.Model);
-
     }
     [Theory]
     [InlineData(1)]
@@ -173,7 +167,5 @@ public class ProductControllerTest
         _mockrepository.Setup(repo => repo.Update(product));
         _controller.Edit(productId,product);
         _mockrepository.Verify(repo=>repo.Update(It.IsAny<Product>()),Times.Once);
-
-
     }
 }
