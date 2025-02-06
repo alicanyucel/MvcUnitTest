@@ -29,24 +29,24 @@ public class ProductControllerTest
     [Fact]
     public async void Index_ActionExecutes_ReturnView()
     {
-        var result=await _controller.Index();
+        var result = await _controller.Index();
         Assert.IsType<ViewResult>(result);
     }
     [Fact]
     public async void Index_ActionExecutes_ReturnProductList()
     {
         _mockrepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(_products);
-        var result=await _controller.Index();
-        var viewResult=Assert.IsType<ViewResult>(result);
+        var result = await _controller.Index();
+        var viewResult = Assert.IsType<ViewResult>(result);
         var productList = Assert.IsAssignableFrom<IEnumerable<Product>>(viewResult.Model);
-        Assert.Equal<int>(2,productList.Count());
+        Assert.Equal<int>(2, productList.Count());
 
     }
     [Fact]
     public async void Details_IdIsNull_ReturnRedirectToIndexAction()
     {
         var result = await _controller.Details(null);
-        var redirect=Assert.IsType<RedirectToActionResult>(result);
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index", redirect.ActionName);
 
     }
@@ -54,7 +54,7 @@ public class ProductControllerTest
     public async void Details_IdInValid_ReturnNotFound()
     {
         Product product = null;
-        _mockrepository.Setup(x=>x.GetByIdAsync(0)).ReturnsAsync(product);
+        _mockrepository.Setup(x => x.GetByIdAsync(0)).ReturnsAsync(product);
         var result = await _controller.Details(0);
         var redirect = Assert.IsType<NotFoundResult>(result);
         Assert.Equal<int>(404, redirect.StatusCode);
@@ -64,27 +64,50 @@ public class ProductControllerTest
     [InlineData(1)]
     public async void Details_ValidId_ReturnProduct(int productId)
     {
-        Product product=_products.First(x=>x.Id==productId);
-        _mockrepository.Setup(repo=>repo.GetByIdAsync(productId)).ReturnsAsync(product);
-        var result=await _controller.Details(productId);
-        var viewResult=Assert.IsType<ViewResult>(result);
-        var resultProduct=Assert.IsAssignableFrom<Product>(viewResult.Model);
+        Product product = _products.First(x => x.Id == productId);
+        _mockrepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(product);
+        var result = await _controller.Details(productId);
+        var viewResult = Assert.IsType<ViewResult>(result);
+        var resultProduct = Assert.IsAssignableFrom<Product>(viewResult.Model);
         Assert.Equal(product.Id, resultProduct.Id);
         Assert.Equal(product.Name, resultProduct.Name);
     }
     [Fact]
     public void Create_ActionExecute_ReturnView()
     {
-        var result= _controller.Create();
+        var result = _controller.Create();
         Assert.IsType<ViewResult>(result);
     }
     [Fact]
-    public async void Create_InvalidModelState_ReturnView()
+    public async void CreatePost_InvalidModelState_ReturnView()
     {
-        _controller.ModelState.AddModelError("Name","Name alanı gereklidir");
-        var result=await _controller.Create(_products.First());
+        _controller.ModelState.AddModelError("Name", "Name alanı gereklidir");
+        var result = await _controller.Create(_products.First());
         var viewResult = Assert.IsType<ViewResult>(result);
         Assert.IsType<Product>(viewResult.Model);
     }
+    [Fact]
+    public async void CreatePost_ValidModelState_ReturnRedirectToAction()
+    {
+        var result = await _controller.Create(_products.First());
+        var rediret = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", rediret.ActionName);
 
+    }
+    [Fact]
+    public async void CreatePost_ValidModelState_CreateMethodExecute()
+    {
+        Product newproduct = null;
+        _mockrepository.Setup(repo => repo.Create(It.IsAny<Product>())).Callback<Product>(x => newproduct = x);
+        var result = await _controller.Create(_products.First());
+        _mockrepository.Verify(repo => repo.Create(It.IsAny<Product>()), Times.Once);
+        Assert.Equal(_products.First().Id, newproduct.Id);
+    }
+    [Fact]
+    public async void CreatePost_InValidModelState_NeverCreateExeCute()
+    {
+        _controller.ModelState.AddModelError("Name","name alanı gereklidir");
+        var result=await _controller.Create(_products.First());
+        _mockrepository.Verify(repo => repo.Create(It.IsAny<Product>()), Times.Never);
+    }
 }
