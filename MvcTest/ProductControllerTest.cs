@@ -165,4 +165,15 @@ public class ProductControllerTest
         var redirect=Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Index",redirect.ActionName);
     }
+    [Theory]
+    [InlineData(1)]
+    public void EditPost_ValidModelState_UpdateMetodExecute(int productId)
+    {
+        var product=_products.First(x=>x.Id==productId);
+        _mockrepository.Setup(repo => repo.Update(product));
+        _controller.Edit(productId,product);
+        _mockrepository.Verify(repo=>repo.Update(It.IsAny<Product>()),Times.Once);
+
+
+    }
 }
