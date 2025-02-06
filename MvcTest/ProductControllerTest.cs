@@ -141,5 +141,11 @@ public class ProductControllerTest
         Assert.Equal(product.Id,resultProduct.Id);
         Assert.Equal(product.Name,resultProduct.Name);
     }
-   
+    [Theory]
+    [InlineData(1)]
+    public void EditPost_IdIsNotEqualProduct_ReturnMotFound(int productId)
+    {
+        var result=_controller.Edit(2,_products.First(x=>x.Id==productId));
+        var redirect = Assert.IsType<NotFoundResult>(result);
+    }
 }
