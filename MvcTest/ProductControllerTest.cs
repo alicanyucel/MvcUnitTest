@@ -77,6 +77,14 @@ public class ProductControllerTest
     {
         var result= _controller.Create();
         Assert.IsType<ViewResult>(result);
-
     }
+    [Fact]
+    public async void Create_InvalidModelState_ReturnView()
+    {
+        _controller.ModelState.AddModelError("Name","Name alanı gereklidir");
+        var result=await _controller.Create(_products.First());
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.IsType<Product>(viewResult.Model);
+    }
+
 }
