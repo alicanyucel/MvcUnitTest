@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using Moq;
 using WebApplication3.Controllers;
 using WebApplication3.Models;
@@ -39,6 +40,24 @@ public class ProductControllerTest
         var viewResult=Assert.IsType<ViewResult>(result);
         var productList = Assert.IsAssignableFrom<IEnumerable<Product>>(viewResult.Model);
         Assert.Equal<int>(2,productList.Count());
+
+    }
+    [Fact]
+    public async void Details_IdIsNull_ReturnRedirectToIndexAction()
+    {
+        var result = await _controller.Details(null);
+        var redirect=Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirect.ActionName);
+
+    }
+    [Fact]
+    public async void Details_IdInValid_ReturnNotFound()
+    {
+        Product product = null;
+        _mockrepository.Setup(x=>x.GetByIdAsync(0)).ReturnsAsync(product);
+        var result = await _controller.Details(0);
+        var redirect = Assert.IsType<NotFoundResult>(result);
+        Assert.Equal<int>(404, redirect.StatusCode);
 
     }
 }
