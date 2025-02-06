@@ -110,4 +110,7 @@ public class ProductControllerTest
         var result=await _controller.Create(_products.First());
         _mockrepository.Verify(repo => repo.Create(It.IsAny<Product>()), Times.Never);
     }
+    // edit testler
+    [Fact]
+   
 }
