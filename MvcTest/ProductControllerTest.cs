@@ -112,5 +112,22 @@ public class ProductControllerTest
     }
     // edit testler
     [Fact]
+    public async void Edit_IdIsNull_ReturnRedirectToIndexAction()
+    {
+        var result = await _controller.Edit(null);
+        var rediret=Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index",rediret.ActionName);
+    }
+    [Theory]// DATA ALDIGI İÇİN FACT DEĞİL
+    [InlineData(3)]
+    public async void Edit_IdInvalid_ReturnNotFound(int productId)
+    {
+        Product product = null;
+        _mockrepository.Setup(x => x.GetByIdAsync(productId)).ReturnsAsync(product);
+        var result= await _controller.Edit(productId);
+        var redirect=Assert.IsType<NotFoundResult>(result);
+        Assert.Equal(404,redirect.StatusCode);
+
+    }
    
 }
