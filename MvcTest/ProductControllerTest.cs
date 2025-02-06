@@ -72,4 +72,6 @@ public class ProductControllerTest
         Assert.Equal(product.Id, resultProduct.Id);
         Assert.Equal(product.Name, resultProduct.Name);
     }
+    //[Fact]
+    //public async void 
 }
