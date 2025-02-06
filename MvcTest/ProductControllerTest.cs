@@ -158,4 +158,12 @@ public class ProductControllerTest
         Assert.IsType<Product>(viewResult.Model);
 
     }
+    [Theory]
+    [InlineData(1)]
+    public void EditPost_ValidModelState_ReturnRedirecToAction(int productId)
+    {
+        var result=_controller.Edit(productId,_products.First(x=>x.Id == productId));
+        var redirect=Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index",redirect.ActionName);
+    }
 }
