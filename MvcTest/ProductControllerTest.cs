@@ -72,6 +72,11 @@ public class ProductControllerTest
         Assert.Equal(product.Id, resultProduct.Id);
         Assert.Equal(product.Name, resultProduct.Name);
     }
-    //[Fact]
-    //public async void 
+    [Fact]
+    public void Create_ActionExecute_ReturnView()
+    {
+        var result= _controller.Create();
+        Assert.IsType<ViewResult>(result);
+
+    }
 }
