@@ -193,4 +193,20 @@ public class ProductControllerTest
         var viewResult=Assert.IsType<ViewResult>(result);
         Assert.IsAssignableFrom<Product>(viewResult.Model);
     }
+    [Theory]
+    [InlineData(1)]
+    public async void DeletConfirmed_ActionExecutes_ReturnRedirectToIndexAction(int productId)
+    {
+        var result=await _controller.DeleteConfirmed(productId);
+        Assert.IsType<RedirectToActionResult>(result);
+    }
+    [Theory]
+    [InlineData(1)]
+    public async void DeleteConfirmed_ActionExecutes_DeleteMethodExecute(int productId)
+    {
+        var product=_products.First(x=>x.Id == productId);
+        _mockrepository.Setup(repo => repo.Delete(product));
+        await _controller.DeleteConfirmed(productId);
+        _mockrepository.Verify(repo => repo.Delete(It.IsAny<Product>()),Times.Once());
+    }
 }
